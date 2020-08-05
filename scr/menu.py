@@ -11,10 +11,7 @@ from os import mkdir
 
 from shutil import rmtree
 
-from json import*
-
-from scr.generator import CreationMap
-from scr.instance import Instance
+from scr.player import Player
 
 def cleanframe(frame):
     for widget in frame.winfo_children():
@@ -31,6 +28,10 @@ class App(Frame):
         
         self.frame = Frame(master,
                            bg="black")
+        
+        if "save" not in listdir("./"):
+            mkdir("./save")
+        
         
         self.frame.pack()
         
@@ -103,9 +104,9 @@ class App(Frame):
             if number_map == self.variable.get():
                 name_play_map = name_map
         
-        game = Instance(self.frame,
-                        name_play_map,
-                        self.master)
+        map = Player(self.master,
+                     self.frame,
+                     name_play_map)
     
     def deletegame(self):
         cleanframe(self.frame)
@@ -145,14 +146,15 @@ class App(Frame):
         returnbutton(self.frame,
                      self.home)
         
-        if "save" not in listdir("./"):
-            mkdir("./save")
-        
         for number_map, list_name_map in enumerate(listdir("./save")):
             if self.name_new_map.get() in list_name_map:
                 self.newgameoption()
                 return
         
-        create_map = CreationMap(self.frame,
-                                 self.name_new_map.get(),
-                                 self.master)
+        mkdir("./save/"+self.name_new_map.get())
+        mkdir("./save/"+self.name_new_map.get()+"/map")
+        mkdir("./save/"+self.name_new_map.get()+"/data")
+        
+        map  = Player(self.master,
+                      self.frame,
+                      self.name_new_map.get())
