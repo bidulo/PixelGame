@@ -19,7 +19,7 @@ class Player():
         self.instance = Instance(self.frame,
                                  self.name_map)
        
-        self.is_start = False
+        self.cooldown_start = False
         
         self.loadplayer()
         
@@ -47,91 +47,95 @@ class Player():
                                                          width=0)
     
     def cooldown(func):
-        def wrapper(self, event):
-            if self.is_start == True:
+        def wrapper(*args, **kwargs):
+            if args[0].cooldown_start == True:
                 return
             else:
-                self.thread._target = func(self, event)
-                self.thread.start()
+                args[0].cooldown_start = True
+                args[0].thread._target = func
+                args[0].thread._args = args
+                args[0].thread._kwargs = kwargs
+                args[0].thread.run()
+                return args[0].thread
         return wrapper
     
-    #@cooldown
+    @cooldown
     def up(self, event):
-        self.is_start = True
         self.py -= 1
         if (self.px, self.py) in self.instance.hidbox:
             self.py += 1
+            self.cooldown_start = False
             return
-        self.thread._started.wait(1)
         if (1+self.py)%16 != 0:
             self.instance.map.move(self.player,
                                    0,
                                    -10)
             print (self.py , self.px)
-            self.is_start = False
-            return
         elif (1+self.py)%16 == 0:
             self.loadplayer()
             print (self.py , self.px)
-            self.is_start = False
-            return
+        self.instance.map.update()
+        self.thread._started.wait(0.5)
+        self.cooldown_start = False
+        return
     
+    @cooldown
     def down(self, event):
         self.py += 1
-        if (self.py)%16 != 0:
-            if (self.px, self.py) in self.instance.hidbox:
+        if (self.px, self.py) in self.instance.hidbox:
                 self.py -= 1
+                self.cooldown_start = False
                 return
+        if (self.py)%16 != 0:
             self.instance.map.move(self.player,
                                    0,
-                                   10)
+                                     10)
             print (self.py , self.px)
-            return
-        
         elif (self.py)%16 == 0:
-            if (self.px, self.py) in self.instance.hidbox:
-                self.py -= 1
-                return
             self.loadplayer()
             print (self.py , self.px)
+        self.instance.map.update()
+        self.thread._started.wait(0.5)
+        self.cooldown_start = False
+        return
     
+    @cooldown
     def right(self, event):
         self.px += 1
-        if (self.px)%16 != 0:
-            if (self.px, self.py) in self.instance.hidbox:
+        if (self.px, self.py) in self.instance.hidbox:
                 self.px -= 1
                 return
+        if (self.px)%16 != 0:
             self.instance.map.move(self.player,
                                    10,
                                    0)
             print (self.py , self.px)
-            return
-        
         elif (self.px)%16 == 0:
-            if (self.px, self.py) in self.instance.hidbox:
-                self.px -= 1
-                return
             self.loadplayer()
             print (self.py , self.px)
+        self.instance.map.update()
+        self.thread._started.wait(0.5)
+        self.cooldown_start = False
+        return
     
+    @cooldown
     def left(self, event):
         self.px -= 1
-        if (1+self.px)%16 != 0:
-            if (self.px, self.py) in self.instance.hidbox:
+        if (self.px, self.py) in self.instance.hidbox:
                 self.px += 1
                 return
+        if (1+self.px)%16 != 0:
             self.instance.map.move(self.player,
                                    -10,
                                    0)
             print (self.py , self.px)
-            return
-        
         elif (1+self.px)%16 ==0:
-            if (self.px, self.py) in self.instance.hidbox:
-                self.px += 1
-                return
             self.loadplayer()
             print (self.py , self.px)
+        self.instance.map.update()
+        self.thread._started.wait(0.5)
+        self.cooldown_start = False
+        return
     
     def chunkx(self):
         return (self.px-(self.px%16))/16
