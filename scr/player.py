@@ -104,6 +104,7 @@ class Player():
         self.px += 1
         if (self.px, self.py) in self.instance.hidbox:
                 self.px -= 1
+                self.cooldown_start = False
                 return
         if (self.px)%16 != 0:
             self.instance.map.move(self.player,
@@ -123,6 +124,7 @@ class Player():
         self.px -= 1
         if (self.px, self.py) in self.instance.hidbox:
                 self.px += 1
+                self.cooldown_start = False
                 return
         if (1+self.px)%16 != 0:
             self.instance.map.move(self.player,
