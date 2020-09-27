@@ -4,21 +4,18 @@ from threading import Thread
 
 from time import sleep
 
-from scr.instance import Instance
 import scr.entity
 
 class Player():
-    def __init__(self, master=None, frame=None, name_map=None, px=0, py=0):
+    def __init__(self, master=None, frame=None, instance=None, px=0, py=0):
         self.master = master
         self.frame = frame
-        self.name_map = name_map
+        self.instance = instance
         self.px = px
         self.py = py
         
         self.thread = Thread()
-        self.instance = Instance(self.frame,
-                                 self.name_map)
-       
+        
         self.cooldown_start = False
         
         self.loadplayer()

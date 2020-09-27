@@ -11,7 +11,7 @@ from os import mkdir
 
 from shutil import rmtree
 
-from scr.player import Player
+from scr.instance import Instance
 
 def cleanframe(frame):
     for widget in frame.winfo_children():
@@ -104,9 +104,9 @@ class App(Frame):
             if number_map == self.variable.get():
                 name_play_map = name_map
         
-        map = Player(self.master,
-                     self.frame,
-                     name_play_map)
+        map = Instance(self.master,
+                       self.frame,
+                       name_play_map)
     
     def deletegame(self):
         cleanframe(self.frame)
@@ -155,6 +155,6 @@ class App(Frame):
         mkdir("./save/"+self.name_new_map.get()+"/map")
         mkdir("./save/"+self.name_new_map.get()+"/data")
         
-        map  = Player(self.master,
-                      self.frame,
-                      self.name_new_map.get())
+        map  = Instance(self.master,
+                        self.frame,
+                        self.name_new_map.get())
